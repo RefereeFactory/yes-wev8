@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Good Things — A Gratitude Journal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+  :root{
+    --bg:#fbf6ef;
+    --card:#ffffff;
+    --ink:#3a352f;
+    --muted:#8a8178;
+    --accent:#c9743a;
+    --accent-soft:#f4e4d4;
+    --green:#5f7a5a;
+    --line:#ece3d8;
+    --shadow:0 10px 30px rgba(120,90,50,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito Sans',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.2}
+
+  /* Hero */
+  .hero{
+    position:relative;
+    padding:72px 22px 60px;
+    text-align:center;
+    background:
+      radial-gradient(1200px 400px at 50% -160px, #ffe9d3 0%, transparent 60%),
+      linear-gradient(180deg,#fdf3e8,#fbf6ef);
+    overflow:hidden;
+  }
+  .hero .sun{
+    font-size:44px;
+    display:inline-block;
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .hero h1{
+    font-size:clamp(2.1rem,6vw,3.6rem);
+    margin:14px auto 10px;
+    max-width:14ch;
+    letter-spacing:-.5px;
+  }
+  .hero p{
+    color:var(--muted);
+    max-width:52ch;
+    margin:0 auto;
+    font-size:1.08rem;
+  }
+  .hero .cta{
+    display:inline-block;
+    margin-top:26px;
+    background:var(--accent);
+    color:#fff;
+    padding:14px 26px;
+    border-radius:40px;
+    text-decoration:none;
+    font-weight:700;
+    min-height:44px;
+    box-shadow:0 8px 20px rgba(201,116,58,.28);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .hero .cta:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(201,116,58,.36)}
+
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+  /* Layout */
+  main{padding:40px 0 20px}
+  .grid{display:grid;gap:26px}
+  @media(min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:26px;
+    box-shadow:var(--shadow);
+  }
+  .card h2{font-size:1.5rem;margin-bottom:6px}
+  .card .sub{color:var(--muted);font-size:.95rem;margin-bottom:18px}
+
+  label{display:block;font-weight:700;font-size:.9rem;margin:14px 0 6px}
+  input[type=text],textarea{
+    width:100%;
+    font-family:inherit;
+    font-size:1rem;
+    color:var(--ink);
+    background:var(--bg);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    resize:vertical;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  input:focus,textarea:focus{outline:none;border-color:var(--accent);background:#fff}
+  textarea{min-height:60px}
+
+  .mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .mood{
+    border:1.5px solid var(--line);
+    background:var(--bg);
+    border-radius:12px;
+    padding:8px 12px;
+    font-size:1.4rem;
+    cursor:pointer;
+    min-width:48px;min-height:48px;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .12s ease,border-color .15s ease,background .15s ease;
+  }
+  .mood:hover{transform:translateY(-2px)}
+  .mood[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+
+  .save-btn{
+    margin-top:22px;
+    width:100%;
+    background:var(--green);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:15px;
+    font-size:1.05rem;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    min-height:48px;
+    transition:filter .15s ease,transform .15s ease;
+  }
+  .save-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .save-btn:disabled{opacity:.6;cursor:default;transform:none}
+
+  .status{font-size:.85rem;color:var(--green);min-height:20px;margin-top:10px;font-weight:600}
+
+  /* Entries */
+  .entries-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .search{
+    flex:1;min-width:160px;
+    background:#fff;border:1.5px solid var(--line);border-radius:40px;
+    padding:10px 16px;font-family:inherit;font-size:.95rem;
+  }
+  .search:focus{outline:none;border-color:var(--accent)}
+
+  .entry{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:16px 18px;
+    margin-bottom:14px;
+    background:#fff;
+    animation:pop .3s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .entry .meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .entry .date{font-size:.82rem;color:var(--muted);font-weight:700;letter-spacing:.3px}
+  .entry .mood-emoji{font-size:1.3rem}
+  .entry ol{margin:6px 0 6px 20px}
+  .entry li{margin:2px 0}
+  .entry .note{color:var(--muted);font-style:italic;margin-top:6px;font-size:.95rem}
+  .entry .del{
+    background:none;border:none;color:var(--muted);cursor:pointer;
+    font-size:.82rem;font-weight:700;padding:6px 8px;border-radius:8px;
+    min-height:44px;
+  }
+  .entry .del:hover{color:var(--accent);background:var(--accent-soft)}
+
+  .empty{
+    text-align:center;color:var(--muted);padding:30px 10px;
+    border:2px dashed var(--line);border-radius:16px;
+  }
+
+  .stats{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 8px}
+  .stat{
+    flex:1;min-width:130px;text-align:center;
+    background:var(--accent-soft);border-radius:16px;padding:18px 12px;
+  }
+  .stat .n{font-family:'Fraunces',serif;font-size:2rem;color:var(--accent);line-height:1}
+  .stat .l{font-size:.82rem;color:var(--muted);font-weight:700;margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+
+  .prompt-card{
+    text-align:center;background:linear-gradient(135deg,#fff,#fdf3e8);
+    border:1px solid var(--line);border-radius:20px;padding:24px;margin-top:26px;
+    box-shadow:var(--shadow);
+  }
+  .prompt-card .q{font-family:'Fraunces',serif;font-style:italic;font-size:1.25rem;margin:8px 0 16px}
+  .prompt-card button{
+    background:#fff;border:1.5px solid var(--accent);color:var(--accent);
+    border-radius:40px;padding:10px 20px;font-family:inherit;font-weight:700;
+    cursor:pointer;min-height:44px;transition:background .15s ease;
+  }
+  .prompt-card button:hover{background:var(--accent-soft)}
+
+  footer{
+    margin-top:40px;background:#2f2a25;color:#e9ded1;
+    padding:44px 22px 40px;
+  }
+  footer .wrap{max-width:760px}
+  footer h2{color:#fff;font-size:1.4rem;margin-bottom:14px}
+  footer ol{margin:0 0 10px 20px}
+  footer li{margin:6px 0;color:#c9bdad}
+  footer .fine{margin-top:22px;font-size:.82rem;color:#8f8477;border-top:1px solid #45403a;padding-top:18px}
+</style>
+<script id="factory-store-sdk">
+window.factory=(function(){
+var K="e600143f-a4e0-48e9-b3c8-6d0c1d862c77",U="https://canvbkibjgcnqowjtarf.supabase.co/functions/v1/app-market",A="sb_publishable_sMTQKIeFgT1vwjHnU7Gexg_8CCmhtxs";
+function call(b){b.appKey=K;return fetch(U,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+A},body:JSON.stringify(b)}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||("store "+r.status));return d;});});}
+var S={
+put:function(c,i,d){return call({op:"put",collection:c,id:String(i),data:d}).then(function(x){return x.doc?x.doc.data:null;});},
+get:function(c,i){return call({op:"get",collection:c,id:String(i)}).then(function(x){return x.doc?x.doc.data:null;});},
+list:function(c){return call({op:"list",collection:c}).then(function(x){return x.docs.map(function(d){return d.data;});});},
+remove:function(c,i){return call({op:"delete",collection:c,id:String(i)}).then(function(){return true;});},
+unlock:function(code){return call({op:"redeem",code:String(code)}).then(function(x){try{localStorage.setItem("factory_access",x.status);}catch(e){}return x.status;});},
+access:function(){try{return localStorage.getItem("factory_access")||"none";}catch(e){return "none";}}
+};
+var _c=null;try{var h=(location.hash||"").match(/factory_code=([a-z0-9-]+)/i);_c=h?h[1]:localStorage.getItem("factory_code");if(h){history.replaceState(null,"",location.pathname+location.search);}}catch(e){}
+var F={put:S.put,get:S.get,list:S.list,remove:S.remove,unlock:S.unlock,access:S.access};
+F.ready=_c?S.unlock(_c).then(function(s){try{if(s!=="invalid")localStorage.setItem("factory_code",_c);}catch(e){}return s;}).catch(function(){return S.access();}):Promise.resolve(S.access());
+return F;})();
+</script>
+<script id="factory-pay-sdk">
+(function(){
+var R="yes-wev8",U="https://canvbkibjgcnqowjtarf.supabase.co/functions/v1/app-pay",P=String.fromCharCode(163);
+function call(b){return fetch(U,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||("pay "+r.status));return d;});});}
+function money(p){return P+(Number(p)/100).toFixed(2);}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=String(x);return e;}
+function say(text,good){var b=document.getElementById("factory-pay-banner");if(!b){b=el("div");b.id="factory-pay-banner";b.setAttribute("role","status");b.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;max-width:520px;margin:0 auto;padding:14px 16px;border-radius:12px;font:600 15px/1.4 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35);cursor:pointer;";b.onclick=function(){b.remove();};document.body.appendChild(b);}b.style.background=good?"#0f5132":"#332b00";b.style.color="#fff";b.textContent=text;}
+var _p=null;function products(){if(!_p)_p=call({op:"products",repo:R});return _p;}
+function buy(id,btn){if(btn){btn.disabled=true;}return call({op:"checkout",product_id:id,return_url:location.origin+location.pathname}).then(function(d){location.href=d.url;}).catch(function(e){if(btn){btn.disabled=false;}say(e.message||"Payment could not be started. Nothing was taken.",false);});}
+function mount(host){if(!host||host.getAttribute("data-factory-pay-done"))return Promise.resolve();host.setAttribute("data-factory-pay-done","1");var want=(host.getAttribute("data-factory-pay")||"").trim().toLowerCase();
+return products().then(function(d){var list=(d.products||[]).filter(function(x){return !want||String(x.name).trim().toLowerCase()===want;});host.textContent="";
+list.forEach(function(x){var row=el("div","factory-pay-item");row.appendChild(el("span","factory-pay-name",x.name));if(x.description)row.appendChild(el("span","factory-pay-desc",x.description));row.appendChild(el("span","factory-pay-price",money(x.price_pence)));
+if(d.open){var b=el("button","factory-pay-btn","Pay "+money(x.price_pence));b.type="button";b.onclick=function(){buy(x.id,b);};row.appendChild(b);}else{row.appendChild(el("span","factory-pay-soon","Online payment opening soon"));}
+host.appendChild(row);});}).catch(function(){host.textContent="";});}
+function mountAll(){var n=document.querySelectorAll("[data-factory-pay]");for(var i=0;i<n.length;i++)mount(n[i]);}
+function back(){var m=(location.search||"").match(/[?&]paid=([A-Za-z0-9_]+)/);if(!m)return;var v=m[1];try{history.replaceState(null,"",location.pathname+location.hash);}catch(e){}
+if(v==="no"){say("Payment cancelled. Nothing was taken.",false);return;}if(v.indexOf("cs_")!==0)return;var tries=0;
+(function ask(){call({op:"order",session_id:v}).then(function(d){var o=d.order||{};if(o.status==="paid"){say("Paid, thank you: "+o.product_name+" "+money(o.gross_pence),true);try{window.dispatchEvent(new CustomEvent("factory:paid",{detail:{product:o.product_name,amount_pence:o.gross_pence}}));}catch(e){}}
+else if(o.status==="pending"&&++tries<8){setTimeout(ask,2000);}else if(o.status==="pending"){say("Thank you. Your payment is being confirmed.",true);}}).catch(function(){if(++tries<4)setTimeout(ask,2000);});})();}
+var st=document.createElement("style");st.textContent=":where(.factory-pay-item){display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:8px 0}:where(.factory-pay-name){font-weight:600}:where(.factory-pay-desc){flex-basis:100%;opacity:.8;font-size:.92em}:where(.factory-pay-price){margin-left:auto}:where(.factory-pay-btn){cursor:pointer;padding:.6em 1.1em;border-radius:.6em;border:0;font:inherit;font-weight:700}:where(.factory-pay-soon){opacity:.7;font-size:.9em}";document.head.appendChild(st);
+window.factory=window.factory||{};window.factory.pay={products:products,buy:buy,mount:mount};
+function go(){back();mountAll();}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
+})();
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <span class="sun" aria-hidden="true">🌤️</span>
+  <h1>Three Good Things</h1>
+  <p>A quiet corner of the day to notice what went well. Write down three good things each evening — small joys count most — and watch a warmer story of your life build up over time.</p>
+  <a class="cta" href="#today">Start tonight's entry</a>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+
+    <!-- Entry form -->
+    <section class="card" id="today" aria-labelledby="today-h">
+      <h2 id="today-h">Tonight's three good things</h2>
+      <p class="sub" id="today-date"></p>
+
+      <label for="g1">One</label>
+      <textarea id="g1" placeholder="A cup of tea in the sun…"></textarea>
+
+      <label for="g2">Two</label>
+      <textarea id="g2" placeholder="A message from an old friend…"></textarea>
+
+      <label for="g3">Three</label>
+      <textarea id="g3" placeholder="Finishing something I'd put off…"></textarea>
+
+      <label>How did today feel?</label>
+      <div class="mood-row" role="group" aria-label="Choose a mood">
+        <button class="mood" type="button" data-mood="😄" aria-pressed="false" aria-label="Great">😄</button>
+        <button class="mood" type="button" data-mood="🙂" aria-pressed="false" aria-label="Good">🙂</button>
+        <button class="mood" type="button" data-mood="😌" aria-pressed="false" aria-label="Calm">😌</button>
+        <button class="mood" type="button" data-mood="😐" aria-pressed="false" aria-label="Okay">😐</button>
+        <button class="mood" type="button" data-mood="😔" aria-pressed="false" aria-label="Low">😔</button>
+      </div>
+
+      <label for="note">Anything else on your mind? (optional)</label>
+      <textarea id="note" placeholder="A gentle note to your future self…"></textarea>
+
+      <button class="save-btn" id="saveBtn">Save tonight's entry 🌙</button>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- Entries list -->
+    <section class="card" aria-labelledby="log-h">
+      <div class="entries-head">
+        <h2 id="log-h">Your journal</h2>
+        <input class="search" id="search" type="text" placeholder="Search your entries…" aria-label="Search entries">
+      </div>
+
+      <div class="stats" id="stats" hidden>
+        <div class="stat"><div class="n" id="statCount">0</div><div class="l">entries</div></div>
+        <div class="stat"><div class="n" id="statThings">0</div><div class="l">good things</div></div>
+        <div class="stat"><div class="n" id="statStreak">0</div><div class="l">day streak</div></div>
+      </div>
+
+      <div id="entries"><div class="empty">Loading your journal…</div></div>
+    </section>
+
+  </div>
+
+  <!-- Prompt -->
+  <section class="prompt-card" aria-live="polite">
+    <div class="l" style="color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-size:.78rem">A little prompt</div>
+    <div class="q" id="promptText">Who made your day a little easier today?</div>
+    <button type="button" id="newPrompt">Give me another →</button>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <ol>
+      <li>Each evening, jot down <strong>three good things</strong> that happened — however small. Noticing the good is a gentle, evidence-based way to lift your mood over time.</li>
+      <li>Pick a mood and add an optional note, then press <strong>Save</strong>. Your entry appears in your journal straight away.</li>
+      <li>Come back tomorrow to see your <strong>streak</strong> grow and re-read past entries with the search box on a harder day.</li>
+    </ol>
+    <p class="fine">Your entries are saved securely in this app's permanent cloud storage, so they're waiting for you next time you visit. This is a personal wellbeing journal, not medical advice — if you're struggling, please reach out to someone you trust or a qualified professional. Made with care. 💛</p>
+  </div>
+</footer>
+
+<script>
+  // ---- Safe storage wrapper (factory is source of truth; localStorage caches) ----
+  const store = {
+    async list(){
+      if(window.factory && factory.list){ try{ return await factory.list('entries'); }catch(e){} }
+      const raw = localStorage.getItem('tgt_entries');
+      return raw ? JSON.parse(raw) : [];
+    },
+    async put(id,doc){
+      if(window.factory && factory.put){ try{ await factory.put('entries',id,doc); }catch(e){} }
+      const raw = localStorage.getItem('tgt_entries');
+      let arr = raw ? JSON.parse(raw) : [];
+      arr = arr.filter(x=>x.id!==id); arr.unshift(doc);
+      localStorage.setItem('tgt_entries', JSON.stringify(arr));
+    },
+    async remove(id){
+      if(window.factory && factory.remove){ try{ await factory.remove('entries',id); }catch(e){} }
+      const raw = localStorage.getItem('tgt_entries');
+      let arr = raw ? JSON.parse(raw) : [];
+      arr = arr.filter(x=>x.id!==id);
+      localStorage.setItem('tgt_entries', JSON.stringify(arr));
+    }
+  };
+
+  let ENTRIES = [];
+  let currentMood = '';
+
+  const $ = s => document.querySelector(s);
+  const el = {
+    date: $('#today-date'), status: $('#status'),
+    g1:$('#g1'), g2:$('#g2'), g3:$('#g3'), note:$('#note'),
+    save:$('#saveBtn'), entries:$('#entries'), search:$('#search'),
+    stats:$('#stats'), statCount:$('#statCount'), statThings:$('#statThings'), statStreak:$('#statStreak')
+  };
+
+  function niceDate(ts){
+    return new Date(ts).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  }
+  el.date.textContent = niceDate(Date.now());
+
+  // ---- Mood selection ----
+  document.querySelectorAll('.mood').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const on = b.getAttribute('aria-pressed')==='true';
+      document.querySelectorAll('.mood').forEach(x=>x.setAttribute('aria-pressed','false'));
+      if(!on){ b.setAttribute('aria-pressed','true'); currentMood=b.dataset.mood; }
+      else currentMood='';
+    });
+  });
+
+  // ---- Prompts ----
+  const prompts = [
+    "Who made your day a little easier today?",
+    "What did you see, hear or taste that you enjoyed?",
+    "What is one thing your body did well for you today?",
+    "Where did you feel most at peace today?",
+    "What small win are you quietly proud of?",
+    "Who would you like to thank, and why?",
+    "What made you smile, even for a moment?",
+    "What did you learn or notice for the first time?",
+    "What comfort are you grateful to have right now?",
+    "What went better than you expected today?"
+  ];
+  $('#newPrompt').addEventListener('click',()=>{
+    let n; do{ n = prompts[Math.floor(Math.random()*prompts.length)]; }while(n===$('#promptText').textContent);
+    $('#promptText').textContent = n;
+  });
+
+  // ---- Save ----
+  el.save.addEventListener('click', async ()=>{
+    const things = [el.g1.value.trim(), el.g2.value.trim(), el.g3.value.trim()].filter(Boolean);
+    if(things.length===0){
+      el.status.style.color='var(--accent)';
+      el.status.textContent='Add at least one good thing to save. 🌱';
+      return;
+    }
+    el.save.disabled=true;
+    el.status.style.color='var(--muted)';
+    el.status.textContent='Saving…';
+    const id = String(Date.now());
+    const doc = { id, ts:Date.now(), things, mood:currentMood, note:el.note.value.trim() };
+    await store.put(id, doc);
+    ENTRIES.unshift(doc);
+    el.status.style.color='var(--green)';
+    el.status.textContent='Saved. Sleep well. 🌙';
+    // reset
+    el.g1.value=el.g2.value=el.g3.value=el.note.value='';
+    document.querySelectorAll('.mood').forEach(x=>x.setAttribute('aria-pressed','false'));
+    currentMood='';
+    el.save.disabled=false;
+    render();
+    setTimeout(()=>{ el.status.textContent=''; },3500);
+  });
+
+  // ---- Streak calc ----
+  function streak(list){
+    if(!list.length) return 0;
+    const days = new Set(list.map(e=>new Date(e.ts).toDateString()));
+    let count=0; let d=new Date();
+    // allow streak to count from today or yesterday
+    if(!days.has(d.toDateString())){ d.setDate(d.getDate()-1); if(!days.has(d.toDateString())) return 0; }
+    while(days.has(d.toDateString())){ count++; d.setDate(d.getDate()-1); }
+    return count;
+  }
+
+  // ---- Render ----
+  function render(){
+    const q = el.search.value.trim().toLowerCase();
+    const shown = ENTRIES.filter(e=>{
+      if(!q) return true;
+      return (e.things.join(' ')+' '+(e.note||'')).toLowerCase().includes(q);
+    });
+
+    // stats (always from full set)
+    if(ENTRIES.length){
+      el.stats.hidden=false;
+      el.statCount.textContent = ENTRIES.length;
+      el.statThings.textContent = ENTRIES.reduce((s,e)=>s+e.things.length,0);
+      el.statStreak.textContent = streak(ENTRIES);
+    } else el.stats.hidden=true;
+
+    if(!shown.length){
+      el.entries.innerHTML = ENTRIES.length
+        ? '<div class="empty">No entries match your search.</div>'
+        : '<div class="empty">Your journal is waiting. Add tonight\'s three good things to begin. 🌟</div>';
+      return;
+    }
+
+    el.entries.innerHTML = shown.map(e=>`
+      <article class="entry">
+        <div class="meta">
+          <span class="date">${niceDate(e.ts)}</span>
+          <span class="mood-emoji" aria-hidden="true">${e.mood||''}</span>
+        </div>
+        <ol>${e.things.map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ol>
+        ${e.note?`<div class="note">“${escapeHtml(e.note)}”</div>`:''}
+        <button class="del" data-id="${e.id}" aria-label="Delete this entry">Delete</button>
+      </article>
+    `).join('');
+
+    el.entries.querySelectorAll('.del').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        if(!confirm('Delete this entry? This cannot be undone.')) return;
+        await store.remove(b.dataset.id);
+        ENTRIES = ENTRIES.filter(x=>x.id!==b.dataset.id);
+        render();
+      });
+    });
+  }
+
+  function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  el.search.addEventListener('input', render);
+
+  // ---- Init ----
+  (async ()=>{
+    try{
+      const list = await store.list();
+      ENTRIES = (list||[]).sort((a,b)=>b.ts-a.ts);
+    }catch(e){ ENTRIES=[]; }
+    render();
+  })();
+</script>
+<div id="factory-provenance" style="padding:14px 16px;text-align:center;font:11px/1.7 system-ui,sans-serif;color:#888;opacity:.85;">&#9874; Built with <a href="https://thefactory.refereeinnovations.com" style="color:#888;">The Factory</a> using third-party AI tools &#183; the app owner is responsible for its content &#183; Standard: UK law, aligned with the UN Universal Declaration of Human Rights &#183; <a href="https://thefactory.refereeinnovations.com/terms.html" style="color:#888;">Terms</a></div>
+</body>
+</html>
